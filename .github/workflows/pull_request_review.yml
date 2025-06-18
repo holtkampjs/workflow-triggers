@@ -6,5 +6,29 @@ jobs:
   rerun_pull_request_job_1:
     name: Rerun pull request job
     runs-on: ubuntu-latest
+    permissions:
+      actions: write
+    env:
+      GH_TOKEN: ${{ github.token }}
     steps:
-      - run: echo hit
+      - name: Extract Job ID
+        run: |
+          # Fetch link to job to rerun
+          run_link="$(gh pr checks ${{ github.event.pull_request.number }} \
+            --repo ${{ github.repository }} \
+            --json name,link \
+            --jq '
+              .[]
+              | select(.name == "Job 1")
+              | .link
+          ')"
+          echo "URL for job to rerun: $run_link"
+
+          # Extract job ID from URL
+          prefix_stripped="${run_link#*/runs/}"
+          job_id="${prefix_stripped%/job/*}"
+
+          echo "JOB_ID=$job_id" >> "$GITHUB_ENV"
+
+      - name: Rerun approval check job
+        run: gh run rerun --repo ${{ github.repository }} "$JOB_ID"
