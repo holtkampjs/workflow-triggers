@@ -7,7 +7,7 @@ jobs:
     name: Rerun pull request job
     runs-on: ubuntu-latest
     permissions:
-      checks: write
+      actions: write
     env:
       GH_TOKEN: ${{ github.token }}
     steps:
