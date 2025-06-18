@@ -9,13 +9,11 @@ jobs:
     env:
       GH_TOKEN: ${{ github.token }}
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
-
       - name: Extract Job ID
         run: |
           # Fetch link to job to rerun
-          run_link="$(gh pr checks \
+          run_link="$(gh pr checks ${{ github.event.pull_request.number }} \
+            --repo ${{ github.repository }} \
             --json name,link \
             --jq '
               .[]
@@ -27,5 +25,6 @@ jobs:
           # Extract job ID from URL
           job_id="${${run_link#*/runs/}%/job/*}"
           echo "JOB_ID=$job_id}" >> "$GITHUB_ENV"
+
       - name: Rerun approval check job
-        run: gh run rerun "$JOB_ID"
+        run: gh run rerun --repo ${{ github.repository }} "$JOB_ID"
