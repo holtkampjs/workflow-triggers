@@ -26,7 +26,7 @@ jobs:
           prefix_stripped="${run_link#*/runs/}"
           job_id="${prefix_stripped%/job/*}"
 
-          echo "JOB_ID=$job_id}" >> "$GITHUB_ENV"
+          echo "JOB_ID=$job_id" >> "$GITHUB_ENV"
 
       - name: Rerun approval check job
         run: gh run rerun --repo ${{ github.repository }} "$JOB_ID"
