@@ -23,7 +23,9 @@ jobs:
           echo "URL for job to rerun: $run_link"
 
           # Extract job ID from URL
-          job_id="${${run_link#*/runs/}%/job/*}"
+          prefix_stripped="${run_link#*/runs/}"
+          job_id="${prefix_stripped%/job/*}"
+
           echo "JOB_ID=$job_id}" >> "$GITHUB_ENV"
 
       - name: Rerun approval check job
